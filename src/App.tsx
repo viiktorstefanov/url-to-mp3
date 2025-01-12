@@ -1,10 +1,11 @@
 import "./App.css";
+import Button from '@mui/material/Button';
 
 function App() {
 
   return (
     <>
-      <div>f</div>
+      <Button variant="text">text</Button>
     </>
   );
 }
