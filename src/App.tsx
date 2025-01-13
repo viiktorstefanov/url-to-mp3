@@ -1,28 +1,24 @@
 import { useState } from "react";
 import "./App.css";
 
-import DownloadButton from "./components/DownloadButton/DownloadButton";
 import Footer from "./components/Footer/Footer";
 import Loader from "./components/Loader/Loader";
-
+import Form from "./components/Form/Form";
 
 function App() {
-  const [ isLoading, setIsLoading ] = useState<boolean>(true);
-  const [ error, setError ] = useState<string | boolean>(false);
-  const [ downloadUrl, setDownloadUrl ] = useState<string | boolean>(false);
+  const [ isLoading, setIsLoading ] = useState(false);
 
-  const getDownloadUrl = (url: string) => {
-    setDownloadUrl(url)
-  };
-
-  const showError = (errorMessage: string) => {
-    setError(errorMessage);
+  const switchLoading = () => {
+    setIsLoading((prev) => !prev);
   };
 
   return (
     <main className="main">
+
       <Loader isLoading={isLoading} />
-      {downloadUrl && <DownloadButton />}
+
+      <Form switchLoading={switchLoading} />
+
       <Footer />
     </main>
   );
