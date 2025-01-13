@@ -7,12 +7,12 @@ const StyledButton = styled(Button)({
     width: "200px"
 });
 
-const ConvertButton: React.FC = () => {
+const ResetButton: React.FC = () => {
   return (
     <StyledButton variant="text" type="submit">
-      convert
+      reset
     </StyledButton>
   );
 };
 
-export default ConvertButton;
+export default ResetButton;

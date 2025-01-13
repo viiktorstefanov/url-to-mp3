@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DownloadButton from "../DownloadButton/DownloadButton";
 import request from "../../service/api";
 import ConvertButton from "../ConvertButton/ConvertButton";
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import styled from "styled-components";
 
 type FormProps = {
@@ -12,12 +12,14 @@ type FormProps = {
 type FormState = {
   downloadUrl: string;
   error: string | null;
+  isConverted: boolean;
 };
 
 const Form: React.FC<FormProps> = ({ switchLoading }) => {
   const [state, setState] = useState<FormState>({
     downloadUrl: "",
     error: null,
+    isConverted: false,
   });
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -29,10 +31,23 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
         switchLoading();
         const responseUrl = await request(state.downloadUrl);
 
+        if(responseUrl.length === 0) {
+          setState((prevState) => ({
+            ...prevState,
+            error: 'Wrong Youtube URL',
+            downloadUrl: '',
+            isConverted: false,
+          }));
+          return;
+        }
+
         setState((prevState) => ({
           ...prevState,
           downloadUrl: responseUrl,
+          isConverted: true,
         }));
+
+
       } catch (error: any) {
         if (error.response.data.message) {
           setState((prevState) => ({
@@ -50,8 +65,17 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
     setState((prevState) => ({
       ...prevState,
       downloadUrl: e.target.value,
+      error: null,
     }));
   };
+
+  const resetStates = () => {
+    setState((prevState) => ({
+      ...prevState,
+      downloadUrl: '',
+      isConverted: false,
+    }))
+  }
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -59,11 +83,16 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
         id="standard-basic"
         label="Youtube URL"
         variant="standard"
+        value={state.downloadUrl}
         onChange={onChange}
       />
-      {state.downloadUrl?.length === 0 && <ConvertButton />}
-      {state.downloadUrl?.length > 0 && (
-        <DownloadButton url={state.downloadUrl} />
+      
+      {!state.isConverted && <Box>
+        <ConvertButton />
+        {/* <ResetButton /> */}
+      </Box>}
+      {state.isConverted && (
+        <DownloadButton url={state.downloadUrl} resetStates={resetStates} />
       )}
       {state.error && <StyledSpan>{state.error}</StyledSpan>}
     </StyledForm>
