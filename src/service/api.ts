@@ -8,7 +8,6 @@ const API_HOST = import.meta.env.VITE_API_HOST;
 const request = async (url : string) => {
 
     const youtubeID = youtube_parser(url);
-    console.log(youtubeID);
     
     const options = {
         method: 'GET',

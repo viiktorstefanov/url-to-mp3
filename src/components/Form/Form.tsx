@@ -10,6 +10,7 @@ type FormProps = {
 };
 
 type FormState = {
+  value: string;
   downloadUrl: string;
   error: string | null;
   isConverted: boolean;
@@ -17,6 +18,7 @@ type FormState = {
 
 const Form: React.FC<FormProps> = ({ switchLoading }) => {
   const [state, setState] = useState<FormState>({
+    value: "",
     downloadUrl: "",
     error: null,
     isConverted: false,
@@ -24,18 +26,20 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
 
   const onSubmit = async (e: React.FormEvent) => {
     setState((prev) => ({ ...prev, error: null }));
+    
     e.preventDefault();
 
-    if (state.downloadUrl) {
+    if (state.value) {
       try {
         switchLoading();
-        const responseUrl = await request(state.downloadUrl);
+        const responseUrl = await request(state.value);
 
         if(responseUrl.length === 0) {
           setState((prevState) => ({
             ...prevState,
             error: 'Wrong Youtube URL',
             downloadUrl: '',
+            value: '',
             isConverted: false,
           }));
           return;
@@ -64,7 +68,7 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
       ...prevState,
-      downloadUrl: e.target.value,
+      value: e.target.value,
       error: null,
     }));
   };
@@ -73,9 +77,10 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
     setState((prevState) => ({
       ...prevState,
       downloadUrl: '',
+      value: '',
       isConverted: false,
     }))
-  }
+  };
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -83,13 +88,12 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
         id="standard-basic"
         label="Youtube URL"
         variant="standard"
-        value={state.downloadUrl}
+        value={state.value}
         onChange={onChange}
       />
       
       {!state.isConverted && <Box>
         <ConvertButton />
-        {/* <ResetButton /> */}
       </Box>}
       {state.isConverted && (
         <DownloadButton url={state.downloadUrl} resetStates={resetStates} />
@@ -111,7 +115,7 @@ const StyledForm = styled.form`
 
 const StyledInput = styled(TextField)({
   maxWidth: "600px",
-  width: "400px",
+  width: "500px",
   backgroundColor: "#ffffff",
   "& .MuiInputBase-input": {
     paddingLeft: "0.5rem",
