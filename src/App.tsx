@@ -16,7 +16,7 @@ function App() {
     <main className="main">
 
       <Loader isLoading={isLoading} />
-
+      
       <Form switchLoading={switchLoading} />
 
       <Footer />

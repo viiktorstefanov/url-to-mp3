@@ -8,7 +8,10 @@ type DownloadButtonProps = {
 };
 
 const Link = styled.a`
- color: #f3d22d;
+  color: #f3d22d;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({ url, resetStates }) => {

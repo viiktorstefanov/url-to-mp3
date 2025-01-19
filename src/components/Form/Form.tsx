@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DownloadButton from "../DownloadButton/DownloadButton";
 import request from "../../service/api";
 import ConvertButton from "../ConvertButton/ConvertButton";
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 import styled from "styled-components";
 
 type FormProps = {
@@ -26,20 +26,20 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
 
   const onSubmit = async (e: React.FormEvent) => {
     setState((prev) => ({ ...prev, error: null }));
-    
+
     e.preventDefault();
 
     if (state.value) {
       try {
         switchLoading();
         const responseUrl = await request(state.value);
-
-        if(responseUrl.length === 0) {
+        
+        if (!responseUrl) {
           setState((prevState) => ({
             ...prevState,
-            error: 'Wrong Youtube URL',
-            downloadUrl: '',
-            value: '',
+            error: "Wrong Youtube URL",
+            downloadUrl: "",
+            value: "",
             isConverted: false,
           }));
           return;
@@ -50,9 +50,8 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
           downloadUrl: responseUrl,
           isConverted: true,
         }));
-
-
       } catch (error: any) {
+        
         if (error.response.data.message) {
           setState((prevState) => ({
             ...prevState,
@@ -76,25 +75,25 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
   const resetStates = () => {
     setState((prevState) => ({
       ...prevState,
-      downloadUrl: '',
-      value: '',
+      downloadUrl: "",
+      value: "",
       isConverted: false,
-    }))
+    }));
   };
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <StyledInput
-        id="standard-basic"
-        label="Youtube URL"
-        variant="standard"
-        value={state.value}
-        onChange={onChange}
-      />
       
-      {!state.isConverted && <Box>
+      <Row>
+        <StyledInput
+          placeholder="Youtube URL"
+          value={state.value}
+          onChange={onChange}
+        />
+
         <ConvertButton />
-      </Box>}
+      </Row>
+
       {state.isConverted && (
         <DownloadButton url={state.downloadUrl} resetStates={resetStates} />
       )}
@@ -109,28 +108,28 @@ const StyledForm = styled.form`
   justify-content: center;
   align-items: center;
   padding: 3rem 0 0 0;
-  gap: 3rem;
   margin: auto;
+  gap: 3rem;
 `;
 
-const StyledInput = styled(TextField)({
-  maxWidth: "600px",
-  width: "500px",
-  backgroundColor: "#ffffff",
-  "& .MuiInputBase-input": {
-    paddingLeft: "0.5rem",
-  },
-  "& .MuiInputLabel-root": {
-    color: "#000",
-    paddingLeft: "0.5rem",
-  },
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: "#000",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "rgb(205, 177, 36)",
-  },
+const Row = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 });
+
+const StyledInput = styled.input`
+  width: 630px;
+  padding: 1rem 0.5rem 1rem 0;
+  padding-left: 1rem;
+  border: none;
+  font-family: Roboto;
+  font-size: 1rem;
+  border-radius: 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: #ffffff;
+`;
 
 const StyledSpan = styled.span`
   color: #d32f2f;
