@@ -4,6 +4,7 @@ import request from "../../service/api";
 import ConvertButton from "../ConvertButton/ConvertButton";
 import { Box } from "@mui/material";
 import styled from "styled-components";
+import useIsMobile from "../../hooks/useIsMobile";
 
 type FormProps = {
   switchLoading: () => void;
@@ -17,6 +18,8 @@ type FormState = {
 };
 
 const Form: React.FC<FormProps> = ({ switchLoading }) => {
+  const isMobile = useIsMobile();
+
   const [state, setState] = useState<FormState>({
     value: "",
     downloadUrl: "",
@@ -25,15 +28,14 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
   });
 
   const onSubmit = async (e: React.FormEvent) => {
-    setState((prev) => ({ ...prev, error: null }));
-
     e.preventDefault();
+    setState((prev) => ({ ...prev, error: null }));
 
     if (state.value) {
       try {
         switchLoading();
         const responseUrl = await request(state.value);
-        
+
         if (!responseUrl) {
           setState((prevState) => ({
             ...prevState,
@@ -51,8 +53,7 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
           isConverted: true,
         }));
       } catch (error: any) {
-        
-        if (error.response.data.message) {
+        if (error.response?.data?.message) {
           setState((prevState) => ({
             ...prevState,
             error: error.response.data.message,
@@ -83,14 +84,12 @@ const Form: React.FC<FormProps> = ({ switchLoading }) => {
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      
-      <Row>
+      <Row className={isMobile ? "mobile" : ""}>
         <StyledInput
           placeholder="Youtube URL"
           value={state.value}
           onChange={onChange}
         />
-
         <ConvertButton />
       </Row>
 
@@ -107,28 +106,36 @@ const StyledForm = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 3rem 0 0 0;
+  padding: 3rem 1rem 0;
   margin: auto;
   gap: 3rem;
+  width: 100%;
 `;
 
-const Row = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
+const Row = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 570px;
+  gap: 0;
+`;
 
 const StyledInput = styled.input`
-  width: 630px;
-  padding: 1rem 0.5rem 1rem 0;
-  padding-left: 1rem;
-  border: none;
-  font-family: Roboto;
+  flex-grow: 1;
+  padding: 1rem;
+  font-family: Roboto, sans-serif;
   font-size: 1rem;
-  border-radius: 8px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border: none;
+  border-radius: 8px 0 0 8px;
   background-color: #ffffff;
+  white-space: nowrap;
+  overflow-x: auto;
+  text-overflow: ellipsis;
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const StyledSpan = styled.span`
